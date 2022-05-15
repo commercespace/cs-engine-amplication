@@ -1,0 +1,19 @@
+{
+  "dataServiceGeneratorVersion": "0.12.7",
+  "appInfo": {
+    "name": "CS Engine",
+    "description": "Commerce space engine",
+    "version": "gixupvbf",
+    "id": "cl2ll2b2095865301s6ynya9csr",
+    "url": "https://app.amplication.com/cl2ll2b2095865301s6ynya9csr",
+    "settings": {
+      "dbHost": "localhost",
+      "dbName": "",
+      "dbPassword": "admin",
+      "dbPort": 5432,
+      "dbUser": "admin",
+      "appId": "cl2ll2b2095865301s6ynya9csr",
+      "authProvider": "Jwt"
+    }
+  }
+}

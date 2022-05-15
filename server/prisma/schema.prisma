@@ -1,0 +1,168 @@
+datasource postgres {
+  provider = "postgresql"
+  url      = env("POSTGRESQL_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt DateTime @default(now())
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     String[]
+  tenantId  String?
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model Tenant {
+  createdAt     DateTime             @default(now())
+  email         String               @unique
+  id            String               @id @default(cuid())
+  name          String               @unique
+  phone         String               @unique
+  servicePoints ServicePoint[]
+  tenantType    EnumTenantTenantType
+  updatedAt     DateTime             @updatedAt
+}
+
+model ServicePoint {
+  address            String
+  createdAt          DateTime            @default(now())
+  deliveryAreaGroups DeliveryAreaGroup[]
+  deliveryAreas      DeliveryArea[]
+  deliverySlots      DeliverySlot[]
+  description        String?
+  email              String
+  ghanaPostGps       String
+  id                 String              @id @default(cuid())
+  isActive           Boolean
+  name               String              @unique
+  phone              String
+  pickupLocations    PickupLocation[]
+  pickupSlots        PickupSlot[]
+  products           Product[]
+  tenant             Tenant              @relation(fields: [tenantId], references: [id])
+  tenantId           String
+  updatedAt          DateTime            @updatedAt
+}
+
+model Product {
+  createdAt      DateTime     @default(now())
+  description    String?
+  id             String       @id @default(cuid())
+  name           String
+  servicePoint   ServicePoint @relation(fields: [servicePointId], references: [id])
+  servicePointId String
+  tenantId       String?
+  updatedAt      DateTime     @updatedAt
+}
+
+model DeliveryArea {
+  createdAt           DateTime           @default(now())
+  deliveryAreaGroup   DeliveryAreaGroup? @relation(fields: [deliveryAreaGroupId], references: [id])
+  deliveryAreaGroupId String?
+  deliveryPrice       Float?
+  deliverySlots       DeliverySlot[]
+  description         String?
+  geoLocation         String
+  id                  String             @id @default(cuid())
+  name                String             @unique
+  servicePoint        ServicePoint?      @relation(fields: [servicePointId], references: [id])
+  servicePointId      String?
+  tenantId            String?
+  updatedAt           DateTime           @updatedAt
+}
+
+model DeliverySlot {
+  createdAt      DateTime                  @default(now())
+  cutOffTime     Int?
+  date           DateTime?
+  day            String
+  deliveryArea   DeliveryArea?             @relation(fields: [deliveryAreaId], references: [id])
+  deliveryAreaId String?
+  deliveryPrice  Float?
+  endTime        String?
+  id             String                    @id @default(cuid())
+  isActive       Boolean
+  isBooked       Boolean
+  orderQuota     Int?
+  pickingPrice   Float?
+  servicePoint   ServicePoint              @relation(fields: [servicePointId], references: [id])
+  servicePointId String
+  slotType       EnumDeliverySlotSlotType?
+  startTime      String
+  tenantId       String?
+  updatedAt      DateTime                  @updatedAt
+  validFrom      DateTime
+  validTo        DateTime
+}
+
+model PickupLocation {
+  createdAt      DateTime     @default(now())
+  deliveryPrice  Float
+  description    String?
+  geoLocation    String
+  id             String       @id @default(cuid())
+  name           String
+  pickupSlots    PickupSlot[]
+  servicePoint   ServicePoint @relation(fields: [servicePointId], references: [id])
+  servicePointId String
+  tenantId       String?
+  updatedAt      DateTime     @updatedAt
+}
+
+model PickupSlot {
+  createdAt        DateTime                @default(now())
+  cutOffTime       Int?
+  date             DateTime
+  day              String
+  deliveryPrice    Float?
+  endTime          String
+  id               String                  @id @default(cuid())
+  isActive         Boolean
+  isBooked         Boolean
+  orderQuota       Int?
+  pickingPrice     Float?
+  pickupLocation   PickupLocation?         @relation(fields: [pickupLocationId], references: [id])
+  pickupLocationId String?
+  servicePoint     ServicePoint            @relation(fields: [servicePointId], references: [id])
+  servicePointId   String
+  slotType         EnumPickupSlotSlotType?
+  startTime        String
+  tenantId         String?
+  updatedAt        DateTime                @updatedAt
+  validFrom        DateTime
+  validTo          DateTime
+}
+
+model DeliveryAreaGroup {
+  createdAt      DateTime       @default(now())
+  deliveryAreas  DeliveryArea[]
+  id             String         @id @default(cuid())
+  name           String
+  servicePoint   ServicePoint?  @relation(fields: [servicePointId], references: [id])
+  servicePointId String?
+  tenantId       String?
+  updatedAt      DateTime       @updatedAt
+}
+
+enum EnumTenantTenantType {
+  DH_DD
+  DH_SD
+  SH_SD
+}
+
+enum EnumDeliverySlotSlotType {
+  RE_CURRENT
+  ABSOLUTE
+}
+
+enum EnumPickupSlotSlotType {
+  RE_CURRENT
+  ABSOLUTE
+}
